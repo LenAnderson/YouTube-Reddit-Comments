@@ -2,7 +2,7 @@
 // @name         YouTube - Reddit Comments
 // @namespace    https://github.com/LenAnderson/
 // @downloadURL  https://github.com/LenAnderson/YouTube-Reddit-Comments/raw/master/youtube_reddit_comments.user.js
-// @version      0.2
+// @version      0.3
 // @author       LenAnderson
 // @match        https://www.youtube.com/watch*
 // @grant        GM_xmlhttpRequest
@@ -66,16 +66,16 @@
 
 
 
-    const searchReddit = async()=>{
-        log('searchReddit');
+    const searchRedditUrl = async(url)=>{
+        log('searchRedditUrl: ', url);
         return new Promise(resolve=>{
             GM_xmlhttpRequest({
                 method: 'GET',
-                url: `https://www.reddit.com/submit.json?url=${encodeURIComponent(location.href)}`,
+                url: `https://www.reddit.com/submit.json?url=${encodeURIComponent(url)}`,
                 onload: (resp)=>{
                     log(resp.responseText);
                     if (resp.responseText == '"{}"') {
-                        console.log('nothing found');
+                        console.log(url, 'nothing found');
                         resolve(null);
                     } else {
                         resolve(JSON.parse(resp.responseText))
@@ -87,6 +87,16 @@
             });
         });
     };
+
+	const searchReddit = async()=>{
+        log('searchReddit');
+		return searchRedditUrl(location.href);
+	}
+
+	const searchRedditShortened = async()=>{
+        log('searchRedditShortened');
+		return searchRedditUrl(`https://youtu.be/${location.search.substring(1).split('&').map(it=>it.split('=')).find(it=>it[0]=='v')[1]}`);
+	};
 
     const loadRedditPosts = async(searchResult)=>{
         log('loadRedditPosts', searchResult);
@@ -302,8 +312,24 @@
                 log('url changed');
                 lastUrl = location.href;
                 await clearGUI();
-                const searchResult = await searchReddit();
+				const searchResults = (await Promise.all([searchReddit(), searchRedditShortened()]));
+				const searchResult = {
+					kind: 'Listing',
+					data: {
+						children: []
+					}
+				};
+				searchResults.forEach(sr=>{
+					if (sr) {
+						if (sr.kind == 'Listing') {
+							searchResult.data.children = searchResult.data.children.concat(sr.data.children);
+						} else {
+							searchResult.data.children.push(sr);
+						}
+					}
+				});
                 if (searchResult) {
+					log('searchResult: ', searchResult);
                     const posts = await loadRedditPosts(searchResult);
                     log(posts);
                     posts.forEach(buildTab);
