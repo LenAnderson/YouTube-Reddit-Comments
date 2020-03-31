@@ -2,7 +2,7 @@
 // @name         YouTube - Reddit Comments
 // @namespace    https://github.com/LenAnderson/
 // @downloadURL  https://github.com/LenAnderson/YouTube-Reddit-Comments/raw/master/youtube_reddit_comments.user.js
-// @version      0.3
+// @version      0.4
 // @author       LenAnderson
 // @match        https://www.youtube.com/watch*
 // @grant        GM_xmlhttpRequest
@@ -324,7 +324,7 @@
 						if (sr.kind == 'Listing') {
 							searchResult.data.children = searchResult.data.children.concat(sr.data.children);
 						} else {
-							searchResult.data.children.push(sr);
+							searchResult.data.children.push(sr[0].data.children[0]);
 						}
 					}
 				});
