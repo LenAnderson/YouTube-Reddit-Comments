@@ -6,7 +6,6 @@
 // @author       LenAnderson
 // @match        https://www.youtube.com/*
 // @grant        GM_xmlhttpRequest
-// @grant        unsafeWindow
 // @connect      reddit.com
 // /==Userscript==
 
@@ -433,5 +432,4 @@ class YtRedditComments {
 	}
 }
 	const app = new YtRedditComments();
-	unsafeWindow.ytrc = app;
 })();
