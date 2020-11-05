@@ -1,0 +1,63 @@
+.ytrc--root {
+  outline: 5px solid red;
+}
+.ytrc--root > .ytrc--tabBar {
+  overflow: auto;
+  white-space: nowrap;
+}
+.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader {
+  color: var(--yt-spec-text-primary);
+  cursor: pointer;
+  display: inline-block;
+  margin-right: 10px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper {
+  display: none;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper.ytrc--active {
+  display: block;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post {
+  font-size: 24px;
+  color: var(--yt-spec-text-primary);
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--post--title {
+  color: var(--yt-spec-text-primary);
+  display: block;
+  margin: 10px;
+  text-decoration: none;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--more {
+  font-size: x-small;
+  font-weight: bold;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--head > .ytrc--comment--toggle {
+  font-family: Verdana;
+  font-size: x-small;
+  cursor: pointer;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--head > .ytrc--comment--user {
+  color: #336699;
+  margin: 0 5px;
+  font-weight: bold;
+  font-size: x-small;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--head > .ytrc--comment--info {
+  font-size: x-small;
+  color: #888888;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body {
+  padding-left: 20px;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body.ytrc--comment--collapsed {
+  display: none;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody {
+  word-wrap: break-word;
+  margin-bottom: 10px;
+  font-size: 1.4rem;
+}
