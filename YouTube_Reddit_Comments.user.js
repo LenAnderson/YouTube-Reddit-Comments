@@ -1,7 +1,7 @@
 // ==Userscript==
 // @name         YouTube - Reddit Comments
 // @namespace    https://github.com/LenAnderson/
-// @downloadURL  https://github.com/LenAnderson/YouTube-Reddit-Comments/raw/master/youtube_reddit_comments.user.js
+// @downloadURL  https://github.com/LenAnderson/YouTube-Reddit-Comments/raw/master/YouTube_Reddit_Comments.user.js
 // @version      1.1
 // @author       LenAnderson
 // @match        https://www.youtube.com/*
