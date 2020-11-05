@@ -1,4 +1,4 @@
-// ==Userscript==
+// ==UserScript==
 // @name         YouTube - Reddit Comments
 // @namespace    https://github.com/LenAnderson/
 // @downloadURL  https://github.com/LenAnderson/YouTube-Reddit-Comments/raw/master/YouTube_Reddit_Comments.user.js
@@ -7,7 +7,7 @@
 // @match        https://www.youtube.com/*
 // @grant        GM_xmlhttpRequest
 // @connect      reddit.com
-// /==Userscript==
+// ==/UserScript==
 
 (()=>{
 	'use strict';
