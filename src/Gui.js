@@ -3,7 +3,7 @@ ${include: Tab.js}
 
 class Gui {
 	constructor() {
-		this.posts = [];
+		this._posts = [];
 		this.dom = {
 			root: null,
 			css: null,
@@ -12,6 +12,19 @@ class Gui {
 			tabs: {}
 		};
 	}
+
+	get posts() {
+		return this._posts;
+	}
+	set posts(value) {
+		this._posts = value;
+		this.posts.forEach(post=>{
+			log('[Gui]', 'creating tab for: ', post);
+			const tab = new Tab(post);
+			this.addTab(tab.title, tab.dom.root);
+		});
+	}
+
 
 	remove() {
 		log('[Gui]', 'remove');
@@ -52,12 +65,6 @@ class Gui {
 
 		this.addTab('YT Comments', yt);
 		this.switchTab(`ytrc--${yt.id}`);
-
-		posts.forEach(post=>{
-			log('[Gui]', 'creating tab for: ', post);
-			const tab = new Tab(post);
-			this.addTab(tab.title, tab.dom.root);
-		});
 
 		log('[Gui]', '/create');
 	}
