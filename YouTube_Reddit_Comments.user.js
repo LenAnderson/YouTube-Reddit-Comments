@@ -2,7 +2,7 @@
 // @name         YouTube - Reddit Comments
 // @namespace    https://github.com/LenAnderson/
 // @downloadURL  https://github.com/LenAnderson/YouTube-Reddit-Comments/raw/master/YouTube_Reddit_Comments.user.js
-// @version      1.1
+// @version      1.2.0
 // @author       LenAnderson
 // @match        https://www.youtube.com/*
 // @grant        GM_xmlhttpRequest
@@ -131,6 +131,17 @@
 		})
 	}
 
+	async loadMore(postLink, id) {
+		log('[Reddit]', 'loadMore', postLink, id);
+		return new Promise(resolve=>{
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: `https://www.reddit.com${postLink}${id}.json`,
+				onload: (resp)=>resolve(this.parsePost(JSON.parse(resp.responseText)))
+			});
+		});
+	}
+
 
 	parsePost(post) {
 		log('[Reddit]', 'parsePost', post);
@@ -141,12 +152,17 @@
 	}
 }
 class CommentMore {
-	constructor(comment) {
+	constructor(comment, postLink) {
 		this.comment = comment;
+		this.postLink = postLink;
+
+		log('[CommentMore]', comment);
 		
 		this.dom = {
 			root: null
 		};
+
+		this.reddit = new Reddit();
 
 		const root = document.createElement('div'); {
 			this.dom.root = root;
@@ -154,10 +170,29 @@ class CommentMore {
 			const more = document.createElement('a'); {
 				more.classList.add('ytrc--comment--more');
 				more.textContent = `load more comments (${comment.children.length})`;
-				more.addEventListener('click', (evt)=>{
+				var clicked = false;
+				more.addEventListener('click', async(evt)=>{
 					evt.preventDefault();
 					evt.stopPropagation();
-					alert('loading more comments is not implemented');
+					if (clicked) return;
+					clicked = true;
+					more.textContent = 'loading...';
+					const data = await this.reddit.loadMore(this.postLink, this.comment.id);
+					more.textContent = 'loaded!';
+					log('[CommentMore]', data);
+					try {
+						const frag = document.createDocumentFragment();
+						data.comments.forEach(comment=>{
+							if (comment.kind == 'more') {
+								frag.appendChild((new CommentMore(comment.data, this.postLink)).dom.root);
+							} else {
+								frag.appendChild((new Comment(comment.data, this.postLink)).dom.root);
+							}
+						});
+						this.dom.root.parentElement.replaceChild(frag, this.dom.root);
+					} catch(ex) {
+						log('[EX]', ex);
+					}
 				});
 				root.appendChild(more);
 			}
@@ -165,8 +200,9 @@ class CommentMore {
 	}
 }
 class Comment {
-	constructor(comment) {
+	constructor(comment, postLink) {
 		this.comment = comment;
+		this.postLink = postLink;
 
 		this.dom = {
 			root: null,
@@ -218,10 +254,10 @@ class Comment {
 				if (comment.replies) {
 					comment.replies.data.children.forEach(reply=>{
 						if (reply.kind == 'more') {
-							const com = new CommentMore(reply.data);
+							const com = new CommentMore(reply.data, this.postLink);
 							body.appendChild(com.dom.root);
 						} else {
-							const com = new Comment(reply.data);
+							const com = new Comment(reply.data, this.postLink);
 							body.appendChild(com.dom.root);
 						}
 					});
@@ -259,10 +295,10 @@ class Tab {
 			}
 			this.post.comments.forEach(root=>{
 				if (root.kind == 'more') {
-					const comm = new CommentMore(root.data);
+					const comm = new CommentMore(root.data, this.post.header.permalink);
 					body.appendChild(comm.dom.root);
 				} else {
-					const comm = new Comment(root.data);
+					const comm = new Comment(root.data, this.post.header.permalink);
 					body.appendChild(comm.dom.root);
 				}
 			});
@@ -274,15 +310,35 @@ class Tab {
 
 class Gui {
 	constructor() {
-		this.posts = [];
+		this._posts = [];
 		this.dom = {
 			root: null,
 			css: null,
 			tabBar: null,
 			tabContainer: null,
-			tabs: {}
+			tabs: {},
+			spinner: null
 		};
 	}
+
+	get posts() {
+		return this._posts;
+	}
+	set posts(value) {
+		this._posts = value;
+		this.posts.forEach(post=>{
+			log('[Gui]', 'creating tab for: ', post);
+			const tab = new Tab(post);
+			this.addTab(tab.title, tab.dom.root);
+		});
+		if (value == null || value.length < 1) {
+			this.dom.tabBar.classList.add('ytrc--nothing');
+		} else {
+			this.dom.tabBar.classList.remove('ytrc--nothing');
+		}
+		this.dom.tabBar.classList.remove('ytrc--loading');
+	}
+
 
 	remove() {
 		log('[Gui]', 'remove');
@@ -297,20 +353,21 @@ class Gui {
 		log('[Gui]', '/remove');
 	}
 
-	async create(posts) {
-		log('[Gui]', 'create', posts);
+	async create() {
+		log('[Gui]', 'create');
 		const yt = await this.findYtComments();
 		const container = document.createElement('div'); {
 			this.dom.root = container;
 			container.classList.add('ytrc--root');
 			const css = document.createElement('style'); {
 				this.dom.css = css;
-				css.innerHTML = '.ytrc--root {  outline: 5px solid red;}.ytrc--root > .ytrc--tabBar {  overflow: auto;  white-space: nowrap;}.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader {  color: var(--yt-spec-text-primary);  cursor: pointer;  display: inline-block;  margin-right: 10px;  max-width: 120px;  overflow: hidden;  text-overflow: ellipsis;  white-space: nowrap;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper {  display: none;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper.ytrc--active {  display: block;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post {  font-size: 24px;  color: var(--yt-spec-text-primary);}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--post--title {  color: var(--yt-spec-text-primary);  display: block;  margin: 10px;  text-decoration: none;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--more {  font-size: x-small;  font-weight: bold;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--head > .ytrc--comment--toggle {  font-family: Verdana;  font-size: x-small;  cursor: pointer;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--head > .ytrc--comment--user {  color: #336699;  margin: 0 5px;  font-weight: bold;  font-size: x-small;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--head > .ytrc--comment--info {  font-size: x-small;  color: #888888;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body {  padding-left: 20px;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body.ytrc--comment--collapsed {  display: none;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody {  word-wrap: break-word;  margin-bottom: 10px;  font-size: 1.4rem;}';
+				css.innerHTML = '@keyframes ytrc--loading {  0% {    content: \' \';  }  25% {    content: \' .\';  }  50% {    content: \' ..\';  }  75% {    content: \' ...\';  }}.ytrc--root {  border-top: 1px solid var(--yt-spec-10-percent-layer);}.ytrc--root > .ytrc--tabBar {  overflow: auto;  white-space: nowrap;}.ytrc--root > .ytrc--tabBar.ytrc--loading > .ytrc--tabHeader.ytrc--spinner {  display: inline-block;}.ytrc--root > .ytrc--tabBar.ytrc--nothing > .ytrc--tabHeader.ytrc--nothing {  display: inline-block;}.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader {  border-top: 2px solid transparent;  color: var(--yt-spec-text-primary);  cursor: pointer;  display: inline-block;  margin-right: 10px;  max-width: 120px;  overflow: hidden;  text-overflow: ellipsis;  white-space: nowrap;}.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader.ytrc--active {  border-top-color: var(--yt-spec-icon-inactive);}.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader.ytrc--spinner {  color: #787878;  cursor: progress;  display: none;  font-weight: bold;}.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader.ytrc--spinner:after {  content: \' \';  animation-name: ytrc--loading;  animation-duration: 2s;  animation-iteration-count: infinite;  animation-delay: 0ms;}.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader.ytrc--nothing {  color: #787878;  cursor: default;  display: none;  font-weight: bold;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper {  display: none;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper.ytrc--active {  display: block;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post {  font-size: 24px;  color: var(--yt-spec-text-primary);}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--post--title {  color: var(--yt-spec-text-primary);  display: block;  margin: 10px;  text-decoration: none;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--more {  font-size: x-small;  font-weight: bold;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--head > .ytrc--comment--toggle {  font-family: Verdana;  font-size: x-small;  cursor: pointer;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--head > .ytrc--comment--user {  color: #336699;  margin: 0 5px;  font-weight: bold;  font-size: x-small;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--head > .ytrc--comment--info {  font-size: x-small;  color: #888888;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body {  padding-left: 20px;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body.ytrc--comment--collapsed {  display: none;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody {  word-wrap: break-word;  margin-bottom: 10px;  font-size: 1.4rem;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md {  line-height: 1.42;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md table {  border-collapse: collapse;  margin: 0.36em 0;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md table td,.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md table th {  border: 1px solid #817f76;  padding: 4px 9px;  text-align: left;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md ul,.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md ol {  padding-left: 40px;}.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md blockquote {  border-left: 2px solid #c5c1ad;  margin-left: 5px;  padding: 0 8px;}';
 				container.appendChild(css);
 			}
 			const tabBar = document.createElement('div'); {
 				this.dom.tabBar = tabBar;
 				tabBar.classList.add('ytrc--tabBar');
+				tabBar.classList.add('ytrc--loading');
 				container.appendChild(tabBar);
 			}
 			const tabContainer = document.createElement('div'); {
@@ -321,14 +378,23 @@ class Gui {
 			yt.parentElement.insertBefore(container, yt);
 		}
 
+		const spinner = document.createElement('div'); {
+			this.dom.spinner = spinner;
+			spinner.classList.add('ytrc--tabHeader');
+			spinner.classList.add('ytrc--spinner');
+			spinner.textContent = 'fetching reddit posts';
+			this.dom.tabBar.appendChild(spinner);
+		}
+
+		const nothing = document.createElement('div'); {
+			nothing.classList.add('ytrc--tabHeader');
+			nothing.classList.add('ytrc--nothing');
+			nothing.textContent = 'not found on reddit';
+			this.dom.tabBar.appendChild(nothing);
+		}
+
 		this.addTab('YT Comments', yt);
 		this.switchTab(`ytrc--${yt.id}`);
-
-		posts.forEach(post=>{
-			log('[Gui]', 'creating tab for: ', post);
-			const tab = new Tab(post);
-			this.addTab(tab.title, tab.dom.root);
-		});
 
 		log('[Gui]', '/create');
 	}
@@ -355,17 +421,19 @@ class Gui {
 				evt.stopPropagation();
 				this.switchTab(id);
 			});
-			this.dom.tabBar.appendChild(header);
+			this.dom.tabBar.insertBefore(header, this.dom.spinner);
 		}
 	}
 
 	switchTab(newKey) {
 		log('[Gui]', 'switchTab', newKey);
-		Object.keys(this.dom.tabs).forEach((key)=>{
+		Object.keys(this.dom.tabs).forEach((key,idx)=>{
 			if (key == newKey) {
 				this.dom.tabs[key].classList.add('ytrc--active');
+				this.dom.tabBar.children[idx].classList.add('ytrc--active');
 			} else {
 				this.dom.tabs[key].classList.remove('ytrc--active');
+				this.dom.tabBar.children[idx].classList.remove('ytrc--active');
 			}
 		});
 	}
@@ -426,9 +494,8 @@ class YtRedditComments {
 	async init() {
 		log('init');
 		this.gui.remove();
-		const posts = await this.reddit.findPosts(location.href);
-		log('posts: ', posts);
-		this.gui.create(posts);
+		this.gui.create();
+		this.gui.posts = await this.reddit.findPosts(location.href);
 	}
 }
 	const app = new YtRedditComments();
