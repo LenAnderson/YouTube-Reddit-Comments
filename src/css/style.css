@@ -12,6 +12,9 @@
     content: ' ...';
   }
 }
+.ytrc--root {
+  border-top: 1px solid var(--yt-spec-10-percent-layer);
+}
 .ytrc--root > .ytrc--tabBar {
   overflow: auto;
   white-space: nowrap;
@@ -23,6 +26,7 @@
   display: inline-block;
 }
 .ytrc--root > .ytrc--tabBar > .ytrc--tabHeader {
+  border-top: 2px solid transparent;
   color: var(--yt-spec-text-primary);
   cursor: pointer;
   display: inline-block;
@@ -31,6 +35,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader.ytrc--active {
+  border-top-color: var(--yt-spec-icon-inactive);
 }
 .ytrc--root > .ytrc--tabBar > .ytrc--tabHeader.ytrc--spinner {
   color: #787878;

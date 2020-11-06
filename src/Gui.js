@@ -9,7 +9,8 @@ class Gui {
 			css: null,
 			tabBar: null,
 			tabContainer: null,
-			tabs: {}
+			tabs: {},
+			spinner: null
 		};
 	}
 
@@ -70,10 +71,8 @@ class Gui {
 			yt.parentElement.insertBefore(container, yt);
 		}
 
-		this.addTab('YT Comments', yt);
-		this.switchTab(`ytrc--${yt.id}`);
-
 		const spinner = document.createElement('div'); {
+			this.dom.spinner = spinner;
 			spinner.classList.add('ytrc--tabHeader');
 			spinner.classList.add('ytrc--spinner');
 			spinner.textContent = 'fetching reddit posts';
@@ -86,6 +85,9 @@ class Gui {
 			nothing.textContent = 'not found on reddit';
 			this.dom.tabBar.appendChild(nothing);
 		}
+
+		this.addTab('YT Comments', yt);
+		this.switchTab(`ytrc--${yt.id}`);
 
 		log('[Gui]', '/create');
 	}
@@ -112,17 +114,21 @@ class Gui {
 				evt.stopPropagation();
 				this.switchTab(id);
 			});
-			this.dom.tabBar.appendChild(header);
+			this.dom.tabBar.insertBefore(header, this.dom.spinner);
 		}
 	}
 
 	switchTab(newKey) {
 		log('[Gui]', 'switchTab', newKey);
-		Object.keys(this.dom.tabs).forEach((key)=>{
+		Object.keys(this.dom.tabs).forEach((key,idx)=>{
+			document.title = newKey;
 			if (key == newKey) {
+				document.title += ' FOUND ' + idx;
 				this.dom.tabs[key].classList.add('ytrc--active');
+				this.dom.tabBar.children[idx].classList.add('ytrc--active');
 			} else {
 				this.dom.tabs[key].classList.remove('ytrc--active');
+				this.dom.tabBar.children[idx].classList.remove('ytrc--active');
 			}
 		});
 	}
