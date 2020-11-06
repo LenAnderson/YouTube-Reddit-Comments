@@ -1,9 +1,23 @@
+@keyframes ytrc--loading {
+	0% { content: ' '; }
+	25% { content: ' .'; }
+	50% { content: ' ..'; }
+	75% { content: ' ...'; }
+}
+
 .ytrc--root {
 	outline: 5px solid red;
 
 	> .ytrc--tabBar {
 		overflow: auto;
 		white-space: nowrap;
+
+		&.ytrc--loading > .ytrc--tabHeader.ytrc--spinner {
+			display: inline-block;
+		}
+		&.ytrc--nothing > .ytrc--tabHeader.ytrc--nothing {
+			display: inline-block;
+		}
 
 		> .ytrc--tabHeader {
 			color: var(--yt-spec-text-primary);
@@ -14,6 +28,27 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
+
+			&.ytrc--spinner {
+				color: rgb(120,120,120);
+				cursor: progress;
+				display: none;
+				font-weight: bold;
+				&:after {
+					content: ' ';
+					animation-name: ytrc--loading;
+					animation-duration: 2s;
+					animation-iteration-count: infinite;
+					animation-delay: 0ms;
+				}
+			}
+
+			&.ytrc--nothing {
+				color: rgb(120,120,120);
+				cursor: default;
+				display: none;
+				font-weight: bold;
+			}
 		}
 	}
 

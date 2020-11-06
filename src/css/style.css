@@ -1,9 +1,29 @@
+@keyframes ytrc--loading {
+  0% {
+    content: ' ';
+  }
+  25% {
+    content: ' .';
+  }
+  50% {
+    content: ' ..';
+  }
+  75% {
+    content: ' ...';
+  }
+}
 .ytrc--root {
   outline: 5px solid red;
 }
 .ytrc--root > .ytrc--tabBar {
   overflow: auto;
   white-space: nowrap;
+}
+.ytrc--root > .ytrc--tabBar.ytrc--loading > .ytrc--tabHeader.ytrc--spinner {
+  display: inline-block;
+}
+.ytrc--root > .ytrc--tabBar.ytrc--nothing > .ytrc--tabHeader.ytrc--nothing {
+  display: inline-block;
 }
 .ytrc--root > .ytrc--tabBar > .ytrc--tabHeader {
   color: var(--yt-spec-text-primary);
@@ -14,6 +34,25 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader.ytrc--spinner {
+  color: #787878;
+  cursor: progress;
+  display: none;
+  font-weight: bold;
+}
+.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader.ytrc--spinner:after {
+  content: ' ';
+  animation-name: ytrc--loading;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-delay: 0ms;
+}
+.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader.ytrc--nothing {
+  color: #787878;
+  cursor: default;
+  display: none;
+  font-weight: bold;
 }
 .ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper {
   display: none;

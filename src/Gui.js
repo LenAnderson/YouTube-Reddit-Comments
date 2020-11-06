@@ -23,6 +23,12 @@ class Gui {
 			const tab = new Tab(post);
 			this.addTab(tab.title, tab.dom.root);
 		});
+		if (value == null || value.length < 1) {
+			this.dom.tabBar.classList.add('ytrc--nothing');
+		} else {
+			this.dom.tabBar.classList.remove('ytrc--nothing');
+		}
+		this.dom.tabBar.classList.remove('ytrc--loading');
 	}
 
 
@@ -53,6 +59,7 @@ class Gui {
 			const tabBar = document.createElement('div'); {
 				this.dom.tabBar = tabBar;
 				tabBar.classList.add('ytrc--tabBar');
+				tabBar.classList.add('ytrc--loading');
 				container.appendChild(tabBar);
 			}
 			const tabContainer = document.createElement('div'); {
@@ -65,6 +72,20 @@ class Gui {
 
 		this.addTab('YT Comments', yt);
 		this.switchTab(`ytrc--${yt.id}`);
+
+		const spinner = document.createElement('div'); {
+			spinner.classList.add('ytrc--tabHeader');
+			spinner.classList.add('ytrc--spinner');
+			spinner.textContent = 'fetching reddit posts';
+			this.dom.tabBar.appendChild(spinner);
+		}
+
+		const nothing = document.createElement('div'); {
+			nothing.classList.add('ytrc--tabHeader');
+			nothing.classList.add('ytrc--nothing');
+			nothing.textContent = 'not found on reddit';
+			this.dom.tabBar.appendChild(nothing);
+		}
 
 		log('[Gui]', '/create');
 	}
