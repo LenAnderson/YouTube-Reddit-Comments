@@ -39,8 +39,8 @@ class Gui {
 		log('[Gui]', '/remove');
 	}
 
-	async create(posts) {
-		log('[Gui]', 'create', posts);
+	async create() {
+		log('[Gui]', 'create');
 		const yt = await this.findYtComments();
 		const container = document.createElement('div'); {
 			this.dom.root = container;

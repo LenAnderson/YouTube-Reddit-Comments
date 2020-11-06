@@ -41,7 +41,7 @@ class YtRedditComments {
 	async init() {
 		log('init');
 		this.gui.remove();
-		this.gui.create([]);
+		this.gui.create();
 		this.gui.posts = await this.reddit.findPosts(location.href);
 	}
 }
