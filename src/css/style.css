@@ -61,3 +61,25 @@
   margin-bottom: 10px;
   font-size: 1.4rem;
 }
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md {
+  line-height: 1.42;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md table {
+  border-collapse: collapse;
+  margin: 0.36em 0;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md table td,
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md table th {
+  border: 1px solid #817f76;
+  padding: 4px 9px;
+  text-align: left;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md ul,
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md ol {
+  padding-left: 40px;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--body > .ytrc--comment--commentBody .md blockquote {
+  border-left: 2px solid #c5c1ad;
+  margin-left: 5px;
+  padding: 0 8px;
+}
