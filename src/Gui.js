@@ -121,9 +121,7 @@ class Gui {
 	switchTab(newKey) {
 		log('[Gui]', 'switchTab', newKey);
 		Object.keys(this.dom.tabs).forEach((key,idx)=>{
-			document.title = newKey;
 			if (key == newKey) {
-				document.title += ' FOUND ' + idx;
 				this.dom.tabs[key].classList.add('ytrc--active');
 				this.dom.tabBar.children[idx].classList.add('ytrc--active');
 			} else {
