@@ -12,9 +12,6 @@
     content: ' ...';
   }
 }
-.ytrc--root {
-  outline: 5px solid red;
-}
 .ytrc--root > .ytrc--tabBar {
   overflow: auto;
   white-space: nowrap;
