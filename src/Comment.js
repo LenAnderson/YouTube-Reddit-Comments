@@ -1,6 +1,7 @@
 class Comment {
-	constructor(comment) {
+	constructor(comment, postLink) {
 		this.comment = comment;
+		this.postLink = postLink;
 
 		this.dom = {
 			root: null,
@@ -52,10 +53,10 @@ class Comment {
 				if (comment.replies) {
 					comment.replies.data.children.forEach(reply=>{
 						if (reply.kind == 'more') {
-							const com = new CommentMore(reply.data);
+							const com = new CommentMore(reply.data, this.postLink);
 							body.appendChild(com.dom.root);
 						} else {
-							const com = new Comment(reply.data);
+							const com = new Comment(reply.data, this.postLink);
 							body.appendChild(com.dom.root);
 						}
 					});

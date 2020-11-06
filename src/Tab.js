@@ -28,10 +28,10 @@ class Tab {
 			}
 			this.post.comments.forEach(root=>{
 				if (root.kind == 'more') {
-					const comm = new CommentMore(root.data);
+					const comm = new CommentMore(root.data, this.post.header.permalink);
 					body.appendChild(comm.dom.root);
 				} else {
-					const comm = new Comment(root.data);
+					const comm = new Comment(root.data, this.post.header.permalink);
 					body.appendChild(comm.dom.root);
 				}
 			});

@@ -79,6 +79,17 @@ class Reddit {
 		})
 	}
 
+	async loadMore(postLink, id) {
+		log('[Reddit]', 'loadMore', postLink, id);
+		return new Promise(resolve=>{
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: `https://www.reddit.com${postLink}${id}.json`,
+				onload: (resp)=>resolve(this.parsePost(JSON.parse(resp.responseText)))
+			});
+		});
+	}
+
 
 	parsePost(post) {
 		log('[Reddit]', 'parsePost', post);
