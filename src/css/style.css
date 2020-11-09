@@ -19,6 +19,13 @@
   overflow: auto;
   white-space: nowrap;
 }
+.ytrc--root > .ytrc--tabBar::-webkit-scrollbar {
+  background: var(--yt-spec-general-background-a);
+  height: 8px;
+}
+.ytrc--root > .ytrc--tabBar::-webkit-scrollbar-thumb {
+  background: var(--yt-opalescence-grey-opacity-lighten-3);
+}
 .ytrc--root > .ytrc--tabBar.ytrc--loading > .ytrc--tabHeader.ytrc--spinner {
   display: inline-block;
 }
@@ -58,6 +65,9 @@
   display: none;
   font-weight: bold;
 }
+.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader.ytrc--noComments {
+  color: #787878;
+}
 .ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper {
   display: none;
 }
@@ -73,6 +83,11 @@
   display: block;
   margin: 10px;
   text-decoration: none;
+}
+.ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--post--noComments {
+  color: #787878;
+  font-size: small;
+  text-align: center;
 }
 .ytrc--root > .ytrc--tabContainer > .ytrc--tabContentWrapper > .ytrc--post .ytrc--comment > .ytrc--comment--more {
   font-size: x-small;

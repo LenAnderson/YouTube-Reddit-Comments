@@ -11,6 +11,14 @@
 		overflow: auto;
 		white-space: nowrap;
 
+		&::-webkit-scrollbar {
+			background: var(--yt-spec-general-background-a);
+			height: 8px;
+		}
+		&::-webkit-scrollbar-thumb {
+			background: var(--yt-opalescence-grey-opacity-lighten-3);
+		}
+
 		&.ytrc--loading > .ytrc--tabHeader.ytrc--spinner {
 			display: inline-block;
 		}
