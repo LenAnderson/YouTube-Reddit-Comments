@@ -35,6 +35,13 @@ class Tab {
 					body.appendChild(comm.dom.root);
 				}
 			});
+			if (this.post.comments.length < 1) {
+				const msg = document.createElement('div'); {
+					msg.classList.add('ytrc--post--noComments');
+					msg.textContent = 'no comments on this post';
+					body.appendChild(msg);
+				}
+			}
 		}
 		log('[Tab]', '/createTab');
 	}

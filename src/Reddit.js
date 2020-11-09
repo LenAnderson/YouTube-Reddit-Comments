@@ -59,8 +59,14 @@ class Reddit {
 		if (searchResult.kind == 'Listing') {
 			return Promise.all(
 				searchResult.data.children
-					.filter(it=>it.data.subreddit_name_prefixed[0] == 'r' && it.data.num_comments > 0)
-					.sort((a,b)=>a.data.score>b.data.score?-1:a.data.score<b.data.score?1:0)
+					.filter(it=>it.data.subreddit_name_prefixed[0] == 'r')
+					.sort((a,b)=>{
+						if (a.data.num_comments > 0 && b.data.num_comments == 0) return -1;
+						if (a.data.num_comments == 0 && b.data.num_comments > 0) return 1;
+						if (a.data.score > b.data.score) return -1;
+						if (a.data.score < b.data.score) return 1;
+						return 0;
+					})
 					.map(it=>this.loadPost(it.data))
 			);
 		} else {

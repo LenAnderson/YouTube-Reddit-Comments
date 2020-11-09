@@ -22,7 +22,7 @@ class Gui {
 		this.posts.forEach(post=>{
 			log('[Gui]', 'creating tab for: ', post);
 			const tab = new Tab(post);
-			this.addTab(tab.title, tab.dom.root);
+			this.addTab(tab.title, tab.dom.root, post.comments.length < 1);
 		});
 		if (value == null || value.length < 1) {
 			this.dom.tabBar.classList.add('ytrc--nothing');
@@ -43,6 +43,7 @@ class Gui {
 		if (this.dom.root) {
 			this.dom.root.remove();
 		}
+		this.dom.tabs = {};
 		log('[Gui]', '/remove');
 	}
 
@@ -95,7 +96,7 @@ class Gui {
 
 
 
-	addTab(title, content) {
+	addTab(title, content, noComments=false) {
 		log('[Gui]', 'addTab', title, content);
 		const id = `ytrc--${content.id}`;
 		const wrapper = document.createElement('div'); {
@@ -107,6 +108,9 @@ class Gui {
 		}
 		const header = document.createElement('div'); {
 			header.classList.add('ytrc--tabHeader');
+			if (noComments) {
+				header.classList.add('ytrc--noComments');
+			}
 			header.textContent = title;
 			header.title = title;
 			header.addEventListener('click', evt=>{
