@@ -86,6 +86,13 @@ class Gui {
 			nothing.textContent = 'not found on reddit';
 			this.dom.tabBar.appendChild(nothing);
 		}
+		const submit = document.createElement('a'); {
+			submit.classList.add('ytrc--tabHeader');
+			submit.classList.add('ytrc--submit');
+			submit.textContent = 'submit to reddit';
+			submit.href = `https://www.reddit.com/submit?url=${encodeURIComponent(location.href)}&title=${encodeURIComponent(document.title)}`;
+			this.dom.tabBar.appendChild(submit);
+		}
 
 		this.addTab('YT Comments', yt);
 		this.switchTab(`ytrc--${yt.id}`);

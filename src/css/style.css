@@ -29,7 +29,8 @@
 .ytrc--root > .ytrc--tabBar.ytrc--loading > .ytrc--tabHeader.ytrc--spinner {
   display: inline-block;
 }
-.ytrc--root > .ytrc--tabBar.ytrc--nothing > .ytrc--tabHeader.ytrc--nothing {
+.ytrc--root > .ytrc--tabBar.ytrc--nothing > .ytrc--tabHeader.ytrc--nothing,
+.ytrc--root > .ytrc--tabBar.ytrc--nothing > .ytrc--tabHeader.ytrc--submit {
   display: inline-block;
 }
 .ytrc--root > .ytrc--tabBar > .ytrc--tabHeader {
@@ -62,6 +63,10 @@
 .ytrc--root > .ytrc--tabBar > .ytrc--tabHeader.ytrc--nothing {
   color: #787878;
   cursor: default;
+  display: none;
+  font-weight: bold;
+}
+.ytrc--root > .ytrc--tabBar > .ytrc--tabHeader.ytrc--submit {
   display: none;
   font-weight: bold;
 }

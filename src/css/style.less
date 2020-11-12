@@ -22,8 +22,10 @@
 		&.ytrc--loading > .ytrc--tabHeader.ytrc--spinner {
 			display: inline-block;
 		}
-		&.ytrc--nothing > .ytrc--tabHeader.ytrc--nothing {
-			display: inline-block;
+		&.ytrc--nothing > .ytrc--tabHeader {
+			&.ytrc--nothing, &.ytrc--submit {
+				display: inline-block;
+			}
 		}
 
 		> .ytrc--tabHeader {
@@ -58,6 +60,10 @@
 			&.ytrc--nothing {
 				color: rgb(120,120,120);
 				cursor: default;
+				display: none;
+				font-weight: bold;
+			}
+			&.ytrc--submit {
 				display: none;
 				font-weight: bold;
 			}
